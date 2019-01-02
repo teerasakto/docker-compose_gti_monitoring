@@ -1,0 +1,53 @@
+version: "2"
+services:
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    restart: always
+    environment:
+      - INFLUXDB_DB=telegraf
+      - INFLUXDB_USER=telegraf
+      - INFLUXDB_USER_PASSWORD=P@ssw0rd
+    ports:
+      - 8083:8083
+      - 8086:8086
+    networks:
+      - monitoring
+    volumes:
+      - influxdb-volume:/var/lib/influxdb
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=P@ssw0rd
+    ports:
+      - 3000:3000
+    networks:
+      - monitoring
+    volumes:
+      - grafana-volume:/var/lib/grafana
+
+  telegraf:
+    image: telegraf:latest
+    container_name: vsphere-telegraf
+    restart: unless-stopped
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - "traefik.enable=false"
+    networks:
+      - monitoring
+
+
+networks:
+  monitoring:
+    external: true
+volumes:
+  grafana-volume:
+    external: true
+  influxdb-volume:
+    external: true
