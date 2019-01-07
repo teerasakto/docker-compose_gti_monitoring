@@ -29,7 +29,7 @@ services:
       - monitoring
     volumes:
       - grafana-volume:/var/lib/grafana
-      - ./grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana.ini:/etc/grafana/grafana.ini:ro
 
   telegraf:
     image: telegraf:latest
