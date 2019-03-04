@@ -1,0 +1,2 @@
+Acquire::http::proxy "http://10.10.0.1:3128";
+Acquire::http::proxy "http://proxy:80";
