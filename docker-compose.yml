@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 services:
   influxdb:
     image: influxdb:latest
@@ -15,6 +15,7 @@ services:
       - monitoring
     volumes:
       - influxdb-volume:/var/lib/influxdb
+      - ./99proxy:/etc/apt/apt.conf.d/99proxy
 
   grafana:
     image: grafana/grafana:latest
@@ -30,14 +31,28 @@ services:
     volumes:
       - grafana-volume:/var/lib/grafana
       - ./grafana.ini:/etc/grafana/grafana.ini:ro
+      - ./99proxy:/etc/apt/apt.conf.d/99proxy
+      - ./plugin/grafana-status-panel:/var/lib/grafana/plugins/grafana-status-panel
+      - ./plugin/grafana-worldping-app:/var/lib/grafana/plugins/grafana-worldping-app
+      - ./plugin/grafana-zabbix:/var/lib/grafana/plugins/grafana-zabbix
+      - ./plugin/grafana-worldmap-panel:/var/lib/grafana/plugins/grafana-worldmap-panel
+      - ./plugin/grafana-statusmap:/var/lib/grafana/plugins/grafana-statusmap
+      - ./plugin/grafana-radar-panel:/var/lib/grafana/plugins/grafana-radar-panel
+      - ./plugin/grafana-piechart-panel:/var/lib/grafana/plugins/grafana-piechart-panel
+      - ./plugin/grafana-polystat-panel:/var/lib/grafana/plugins/grafana-polystat-panel
+      - ./plugin/grafana-dot-status:/var/lib/grafana/plugins/grafana-dot-status
+      - ./plugin/grafana-multistat-panel:/var/lib/grafana/plugins/grafana-multistat-panel
+      - ./plugin/grafana-diagram:/var/lib/grafana/plugins/grafana-diagram
+      - ./plugin/grafana-clock-panel:/var/lib/grafana/plugins/grafana-clock-panel
 
   telegraf:
     image: telegraf:latest
     container_name: vsphere-telegraf
-    restart: unless-stopped
+    restart: always
     volumes:
       - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./99proxy:/etc/apt/apt.conf.d/99proxy
     labels:
       - "traefik.enable=false"
     networks:
